@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "98451514490",
+    "firebase_url": "https://kyc-challenge.firebaseio.com",
+    "project_id": "kyc-challenge",
+    "storage_bucket": "kyc-challenge.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98451514490:android:3c78ad0c8a3ed4480d07c3",
+        "android_client_info": {
+          "package_name": "com.example.kyc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98451514490-ee45bjj5ma39rtj4rba68db1vf4pngp2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_huZCe5zSf5uSzxkFV93EXi6DsXR5nDA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98451514490-ee45bjj5ma39rtj4rba68db1vf4pngp2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
