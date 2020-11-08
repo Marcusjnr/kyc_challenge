@@ -12,6 +12,7 @@ class AppTextField extends StatefulWidget {
   final ValidatorCallback validatorCallback;
   final String title;
   final bool hasTitle;
+  final TextInputType keyboardType;
   final bool isDate;
 
 
@@ -22,6 +23,7 @@ class AppTextField extends StatefulWidget {
     @required this.validatorCallback,
     this.title,
     this.hasTitle = true,
+    this.keyboardType = TextInputType.text,
     this.isDate = false
   });
   @override
@@ -83,6 +85,7 @@ class _AppTextFieldState extends State<AppTextField> {
               controller: widget.controller,
               validator: widget.validatorCallback,
               style: TextStyle(color: Colors.black),
+              keyboardType: widget.keyboardType,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none

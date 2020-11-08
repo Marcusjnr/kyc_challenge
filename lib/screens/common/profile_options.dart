@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kyc/common_widgets/alerts.dart';
+import 'package:kyc/providers/profile_provider.dart';
 import 'package:kyc/screens/upload_passport.dart';
+import 'package:provider/provider.dart';
 
 class ProfileOptions extends StatelessWidget {
   final IconData icon;
@@ -29,19 +31,47 @@ class ProfileOptions extends StatelessWidget {
     return GestureDetector(
       onTap: (){
         if(position == 0){
-          AlertDialogs.showBvn(
-              context,
-              'BVN Verification',
-              'Confirm',
-              controller,
-              dobController ,
-              alertButtonPressed
-          );
+          if(Provider.of<ProfileProvider>(context, listen: false).userValidated){
+            AlertDialogs.showBvn(
+                context,
+                'BVN Verification',
+                'Confirm',
+                controller,
+                dobController ,
+                alertButtonPressed
+            );
+          }else{
+            AlertDialogs.showDialog(
+                context,
+                'Validation Required',
+                'Please Validate Your Email before proceeding',
+                Icons.close,
+                'Okay',
+                    (){
+                  Navigator.pop(context);
+
+                }
+            );
+          }
         }else{
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => UploadPassportScreen()),
-          );
+          if(Provider.of<ProfileProvider>(context, listen: false).userValidated == true){
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UploadPassportScreen()));
+
+          }else{
+            AlertDialogs.showDialog(
+                context,
+                'Validation Required',
+                'Please Validate Your Email before proceeding',
+                Icons.close,
+                'Okay',
+                    (){
+                  Navigator.pop(context);
+
+                }
+            );
+          }
         }
       },
       child: Container(

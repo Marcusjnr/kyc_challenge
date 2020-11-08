@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kyc/common_widgets/alerts.dart';
 import 'package:kyc/data/authentication/authentication_repo.dart';
+import 'package:kyc/models/email_validation_model/email_validation_request.dart';
+import 'package:kyc/models/email_validation_model/email_validation_response.dart';
 import 'package:kyc/models/login_model/login_request_model.dart';
 import 'package:kyc/models/login_model/login_response_model.dart';
 import 'package:kyc/models/signup_model/signup_request_model.dart';
@@ -16,6 +18,7 @@ import 'package:provider/provider.dart';
 mixin AuthenticationHelper{
   BuildContext _authContext;
 
+
   doSignUp(Dio dio, SignUpRequest signUpRequest,String baseUrl, BuildContext context){
     _authContext = context;
     Provider.of<AuthenticationProvider>(_authContext, listen: false).updateIsLoading(true);
@@ -26,6 +29,12 @@ mixin AuthenticationHelper{
     _authContext = context;
     Provider.of<AuthenticationProvider>(_authContext, listen: false).updateIsLoading(true);
     authenticationRepo.login(dio, loginRequest, baseUrl, _completedLogin);
+  }
+
+  doEmailValidation(Dio dio, EmailValidationRequest validationRequest,String baseUrl, BuildContext context) async{
+    _authContext = context;
+    Provider.of<AuthenticationProvider>(_authContext, listen: false).updateIsLoading(true);
+    authenticationRepo.validateEmail(dio, validationRequest, baseUrl, _completedValidation);
   }
 
 
@@ -55,6 +64,12 @@ mixin AuthenticationHelper{
             signUpResponse.result.lastname
         );
 
+        Provider.of<ProfileProvider>(_authContext, listen: false).updateUserValidated(signUpResponse.result.emailVerification);
+        Provider.of<AuthenticationProvider>(_authContext, listen: false).updateUserDetails(
+            '${signUpResponse.result.lastname} ${signUpResponse.result.firstname}',
+            signUpResponse.result.username,
+            signUpResponse.result.email
+        );
         Navigator.pushReplacement(
           _authContext,
           MaterialPageRoute(builder: (context) => ProfileScreen(
@@ -69,7 +84,7 @@ mixin AuthenticationHelper{
         AlertDialogs.showDialog(
             _authContext,
             'Sign up failed',
-            'Could not sign up try again',
+            signUpResponse.message,
             Icons.close,
             'Okay',
                 (){
@@ -108,7 +123,11 @@ mixin AuthenticationHelper{
         );
 
         Provider.of<ProfileProvider>(_authContext, listen: false).updateUserValidated(loginResponse.result.validated);
-
+        Provider.of<AuthenticationProvider>(_authContext, listen: false).updateUserDetails(
+            '${loginResponse.result.user.lastname} ${loginResponse.result.user.firstname}',
+            loginResponse.result.user.username,
+            loginResponse.result.user.email
+        );
         Navigator.pushReplacement(
           _authContext,
           MaterialPageRoute(builder: (context) => ProfileScreen(
@@ -123,12 +142,71 @@ mixin AuthenticationHelper{
         AlertDialogs.showDialog(
             _authContext,
             'Login failed',
-            'Could not Login',
+            loginResponse.message,
             Icons.close,
             'Okay',
                 (){
               Navigator.pop(_authContext);
 
+            }
+        );
+      }
+    }
+  }
+
+  _completedValidation(Operation operation){
+    if(operation.code == 508 || operation.code == 408){
+      Provider.of<AuthenticationProvider>(_authContext, listen: false).updateIsLoading(false);
+      AlertDialogs.showDialog(
+          _authContext,
+          'Check Internet Connection',
+          'Could Not Login',
+          Icons.close,
+          'Okay',
+              (){
+            Navigator.pop(_authContext);
+
+          }
+      );
+    }else{
+      EmailValidationResponse validationResponse = operation.result;
+      if(validationResponse.success == true){
+        Provider.of<ProfileProvider>(_authContext, listen: false).updateUserValidated(true);
+        AlertDialogs.showDialog(
+            _authContext,
+            'Successful',
+            validationResponse.message,
+            Icons.close,
+            'Okay',
+                (){
+                  Navigator.push(
+                    _authContext,
+                    MaterialPageRoute(builder: (context) => ProfileScreen(
+                      fullName: Provider.of<AuthenticationProvider>(_authContext, listen: false).fullName,
+                      userName: Provider.of<AuthenticationProvider>(_authContext, listen: false).userName,
+                      email: Provider.of<AuthenticationProvider>(_authContext, listen: false).email,
+                    )),
+                  );
+            }
+        );
+
+      }else{
+        Provider.of<ProfileProvider>(_authContext, listen: false).updateUserValidated(false);
+        AlertDialogs.showDialog(
+            _authContext,
+            'Failed',
+            validationResponse.message,
+            Icons.close,
+            'Okay',
+                (){
+              Navigator.push(
+                _authContext,
+                MaterialPageRoute(builder: (context) => ProfileScreen(
+                  fullName: Provider.of<AuthenticationProvider>(_authContext, listen: false).fullName,
+                  userName: Provider.of<AuthenticationProvider>(_authContext, listen: false).userName,
+                  email: Provider.of<AuthenticationProvider>(_authContext, listen: false).email,
+                )),
+              );
             }
         );
       }

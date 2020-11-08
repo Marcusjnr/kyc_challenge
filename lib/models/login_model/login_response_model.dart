@@ -11,19 +11,23 @@ String loginResponseToJson(LoginResponse data) => json.encode(data.toJson());
 class LoginResponse {
   LoginResponse({
     this.success,
+    this.message,
     this.result,
   });
 
   bool success;
+  String message;
   Result result;
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
     success: json["success"],
-    result: Result.fromJson(json["result"]),
+    message: json["message"],
+    result: json["result"] == null ? null : Result.fromJson(json["result"]),
   );
 
   Map<String, dynamic> toJson() => {
     "success": success,
+    "message": message,
     "result": result.toJson(),
   };
 }
@@ -50,40 +54,44 @@ class Result {
 
 class User {
   User({
+    this.password,
+    this.confirmationcode,
+    this.level,
     this.firstname,
     this.emailvalidated,
-    this.confirmationcode,
-    this.lastname,
-    this.password,
-    this.username,
     this.email,
+    this.lastname,
+    this.username,
   });
 
+  String password;
+  String confirmationcode;
+  String level;
   String firstname;
   bool emailvalidated;
-  String confirmationcode;
-  String lastname;
-  String password;
-  String username;
   String email;
+  String lastname;
+  String username;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
+    password: json["password"],
+    confirmationcode: json["confirmationcode"],
+    level: json["level"],
     firstname: json["firstname"],
     emailvalidated: json["emailvalidated"],
-    confirmationcode: json["confirmationcode"],
-    lastname: json["lastname"],
-    password: json["password"],
-    username: json["username"],
     email: json["email"],
+    lastname: json["lastname"],
+    username: json["username"],
   );
 
   Map<String, dynamic> toJson() => {
+    "password": password,
+    "confirmationcode": confirmationcode,
+    "level": level,
     "firstname": firstname,
     "emailvalidated": emailvalidated,
-    "confirmationcode": confirmationcode,
-    "lastname": lastname,
-    "password": password,
-    "username": username,
     "email": email,
+    "lastname": lastname,
+    "username": username,
   };
 }

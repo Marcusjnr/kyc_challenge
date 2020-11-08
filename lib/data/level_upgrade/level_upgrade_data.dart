@@ -1,17 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:kyc/models/bvn_validation_model/bvn_validation_request.dart';
-import 'package:kyc/models/bvn_validation_model/bvn_validation_response.dart';
+import 'package:kyc/models/level_upgrade/level_upgrade_request.dart';
+import 'package:kyc/models/level_upgrade/level_upgrade_response.dart';
 import 'package:kyc/utils/operation.dart';
 
-class BvnValidationData{
-  Future<Operation> bvnValidation(Dio dio, BvnValidationRequest  validationRequest,String baseUrl) async{
+class LevelUpgradeData{
+  Future<Operation> levelUpgrade(Dio dio, LevelUpgradeRequest  upgradeRequest,String baseUrl) async{
 
-    print(validationRequest.toJson());
-    print(baseUrl);
+    print(upgradeRequest.toJson());
     try{
       var response = await dio.post(
-        '$baseUrl/api/bvn/validate',
-        data: validationRequest.toJson(),
+        '$baseUrl/api/user/level/update',
+        data: upgradeRequest.toJson(),
 
       ).timeout(Duration(minutes: 2), onTimeout: () async{
         return Response(
@@ -28,7 +28,7 @@ class BvnValidationData{
       if(response.statusCode == 508 || response.statusCode == 408){
         return Operation(response.statusCode, response.data);
       }else{
-        BvnValidationResponse data = BvnValidationResponse.fromJson(response.data);
+        LevelUpgradeResponse data = LevelUpgradeResponse.fromJson(response.data);
         return Operation(response.statusCode, data);
 
       }
@@ -46,8 +46,6 @@ class BvnValidationData{
 
   }
 
-
-
 }
 
-final bvnValidationData = BvnValidationData();
+final levelUpgradeData = LevelUpgradeData();

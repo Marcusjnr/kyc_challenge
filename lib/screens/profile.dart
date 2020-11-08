@@ -7,8 +7,10 @@ import 'package:kyc/common_widgets/app_button.dart';
 import 'package:kyc/mixins/bvn_validation_helper/bvn_validation_helper.dart';
 import 'package:kyc/models/bvn_validation_model/bvn_validation_request.dart';
 import 'package:kyc/providers/app_provider.dart';
+import 'package:kyc/providers/authentication_provider.dart';
 import 'package:kyc/providers/profile_provider.dart';
 import 'package:kyc/screens/common/profile_options.dart';
+import 'package:kyc/screens/validate_email_screen.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -17,9 +19,9 @@ class ProfileScreen extends StatefulWidget {
   final String email;
 
   ProfileScreen({
-    @required this.fullName,
-    @required this.userName,
-    @required this.email
+    this.fullName,
+    this.userName,
+     this.email
 });
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -34,6 +36,10 @@ class _ProfileScreenState extends State<ProfileScreen> with ProfileHelper{
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<AuthenticationProvider>(context, listen: false).updateIsLoading(false);
+
+    });
 
   }
   @override
@@ -105,15 +111,15 @@ class _ProfileScreenState extends State<ProfileScreen> with ProfileHelper{
                               ),
                               child: Center(
                                 child: Text(
-                                    'KYC LV 0'
+                                    'KYC LV ${profileProvider.userLevel}'
                                 ),
                               ),
                             ),
 
-                            Text(
-                              'Upgrade to level 1',
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
+                            // Text(
+                            //   'Upgrade to level 1',
+                            //   style: Theme.of(context).textTheme.headline4,
+                            // ),
                           ],
                         ),
 
@@ -177,10 +183,20 @@ class _ProfileScreenState extends State<ProfileScreen> with ProfileHelper{
                           ),
                         ),
 
+                        Provider.of<ProfileProvider>(context, listen: false).userValidated
+                        ?
+                        Container()
+                        :
                         AppSolidButton(
                           style: Theme.of(context).textTheme.subtitle1,
-                          text: 'Begin Verification',
+                          text: 'Validate Email',
+                          onPressed: (){
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ValidateEmailScreen()));
+                          },
                         )
+
                       ],
                     ),
                   ),
@@ -191,12 +207,8 @@ class _ProfileScreenState extends State<ProfileScreen> with ProfileHelper{
                   child: WillPopScope(
                     onWillPop: () async => false,
                     child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
                       color: Colors.black38,
-                      child: Container(
-                        width: 50,
-                        height: 50,
+                      child: Center(
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),),
                       )),

@@ -138,9 +138,10 @@ class SignUpScreen extends StatelessWidget with AuthenticationHelper{
                             child: signUpProvider.isLoading
                             ?
                             Container(
-                                width: 50,
-                                height: 50,
-                                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),))
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),),
+                                ))
                             :
                             AppSolidButton(
                               text: 'Sign up',

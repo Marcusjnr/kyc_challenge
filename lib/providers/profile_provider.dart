@@ -7,10 +7,16 @@ class ProfileProvider extends ChangeNotifier{
   bool uploadingPassportLoading = false;
   Uint8List profile;
   bool userValidated = false;
+  String userLevel = '0';
 
 
   void updateIsLoading(bool isLoadingGotten){
     isLoading = isLoadingGotten;
+    notifyListeners();
+  }
+
+  void updateUserLevel(String userLevelGotten){
+    userLevel = userLevelGotten;
     notifyListeners();
   }
 

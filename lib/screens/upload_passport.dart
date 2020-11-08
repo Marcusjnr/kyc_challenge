@@ -5,10 +5,14 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kyc/common_widgets/app_button.dart';
+import 'package:kyc/mixins/level_upgrade/level_upgrade_helper.dart';
+import 'package:kyc/models/level_upgrade/level_upgrade_request.dart';
+import 'package:kyc/providers/app_provider.dart';
 import 'package:kyc/providers/profile_provider.dart';
+import 'package:kyc/storage/shared_preferences_helper.dart';
 import 'package:provider/provider.dart';
 
-class UploadPassportScreen extends StatelessWidget {
+class UploadPassportScreen extends StatelessWidget with LevelUpgradeHelper{
   File imagePicked;
   Uint8List _image;
   Future<File> imageFile;
@@ -115,13 +119,21 @@ class UploadPassportScreen extends StatelessWidget {
   void uploadStatusImage(BuildContext context) async {
 
     await Firebase.initializeApp();
+    String email = await SharedHelper.getUserDetailsSpecific('email', context);
     firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref().child("images");
     var timeKey = DateTime.now();
     firebase_storage.UploadTask uploadTask = ref.child('${timeKey.toString()}.jpg').putFile(imagePicked);
     uploadTask.whenComplete(() => {
 
-      Provider.of<ProfileProvider>(context, listen: false).updatePassportLoading(false),
-      Navigator.pop(context)
+      doLevelUpgrade(
+          Provider.of<AppProvider>(context, listen: false).dio,
+          LevelUpgradeRequest(
+            email: email,
+            level: '2'
+          ),
+          Provider.of<AppProvider>(context, listen: false).baseUrl,
+          context
+      ),
     });
 
   }
