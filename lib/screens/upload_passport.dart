@@ -123,13 +123,16 @@ class UploadPassportScreen extends StatelessWidget with LevelUpgradeHelper{
     firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref().child("images");
     var timeKey = DateTime.now();
     firebase_storage.UploadTask uploadTask = ref.child('${timeKey.toString()}.jpg').putFile(imagePicked);
-    uploadTask.whenComplete(() => {
+    String downloadUrl = await (await uploadTask.whenComplete(() => null)).ref.getDownloadURL();
 
+
+    uploadTask.whenComplete(() => {
       doLevelUpgrade(
           Provider.of<AppProvider>(context, listen: false).dio,
           LevelUpgradeRequest(
             email: email,
-            level: '2'
+            level: '2',
+            imageUrl: downloadUrl
           ),
           Provider.of<AppProvider>(context, listen: false).baseUrl,
           context

@@ -123,6 +123,7 @@ mixin AuthenticationHelper{
         );
 
         Provider.of<ProfileProvider>(_authContext, listen: false).updateUserValidated(loginResponse.result.validated);
+        Provider.of<ProfileProvider>(_authContext, listen: false).updateUserLevel(loginResponse.result.user.level);
         Provider.of<AuthenticationProvider>(_authContext, listen: false).updateUserDetails(
             '${loginResponse.result.user.lastname} ${loginResponse.result.user.firstname}',
             loginResponse.result.user.username,

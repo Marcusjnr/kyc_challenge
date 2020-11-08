@@ -36,11 +36,10 @@ mixin LevelUpgradeHelper{
       LevelUpgradeResponse upgradeResponse = operation.result;
       Provider.of<ProfileProvider>(_authContext, listen: false).updatePassportLoading(false);
       if(upgradeResponse.success == true){
-        Provider.of<ProfileProvider>(_authContext, listen: false).updateUserLevel('2');
         AlertDialogs.showDialog(
             _authContext,
             'Successful',
-            'You have upgraded your account to level $level',
+            upgradeResponse.message,
             Icons.done,
             'Okay',
                 (){
